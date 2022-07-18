@@ -22,7 +22,7 @@ class AppDB extends _$AppDB {
   @override
   int get schemaVersion => 1;
 
-  Stream<List<EmployeeData>> watchEmployees() => select(employee).watch();
+  Stream<List<EmployeeData>> get watchEmployees => (select(employee).watch());
 
   Future<List<EmployeeData>> getEmployees() async =>
       await select(employee).get();

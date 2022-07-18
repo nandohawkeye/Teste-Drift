@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:teste_drift/data/local/db/app_db.dart';
 import 'package:teste_drift/shared/utils/utils.dart';
 import 'package:teste_drift/shared/widgets/birthdate_textformfield.dart';
@@ -16,7 +17,6 @@ class EditEmployeePage extends StatefulWidget {
 
 class _EditEmployeePageState extends State<EditEmployeePage> {
   late EmployeeData _employee;
-  late AppDB _db;
   final _textEditingControllerUserName = TextEditingController();
   final _textEditingControllerFirstName = TextEditingController();
   final _textEditingControllerLastName = TextEditingController();
@@ -25,15 +25,13 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
   final GlobalKey<FormState> _formGlobalKey = GlobalKey<FormState>();
 
   @override
-  void initState() {
-    super.initState();
-    _db = AppDB();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     getEmployee();
   }
 
   @override
   void dispose() {
-    _db.close();
     _textEditingControllerUserName.dispose();
     _textEditingControllerFirstName.dispose();
     _textEditingControllerLastName.dispose();
@@ -52,7 +50,10 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
           IconButton(
             onPressed: () async => aditEmployee(),
             icon: const Icon(Icons.save),
-          )
+          ),
+          IconButton(
+              onPressed: () async => deleteEmployee(),
+              icon: const Icon(Icons.delete))
         ],
       ),
       body: Padding(
@@ -100,17 +101,41 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
         dateOfBirth: drift.Value(_dateOfBirth!),
       );
 
-      await _db.updateEmployee(entity).then((result) =>
-          ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
-              content: Text('Funcionário editado: $result'),
-              actions: [
-                IconButton(
-                  onPressed: () =>
-                      ScaffoldMessenger.of(context).hideCurrentMaterialBanner(),
-                  icon: const Icon(Icons.close),
-                )
-              ])));
+      await Provider.of<AppDB>(context, listen: false)
+          .updateEmployee(entity)
+          .then((result) => ScaffoldMessenger.of(context).showMaterialBanner(
+                  MaterialBanner(
+                      content: Text('Funcionário editado: $result'),
+                      actions: [
+                    IconButton(
+                      onPressed: () => ScaffoldMessenger.of(context)
+                          .hideCurrentMaterialBanner(),
+                      icon: const Icon(Icons.close),
+                    )
+                  ])));
     }
+  }
+
+  void deleteEmployee() async {
+    await Provider.of<AppDB>(context, listen: false)
+        .deleteEmployee(widget.id)
+        .then((result) =>
+            ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
+                backgroundColor: Colors.red,
+                content: Text(
+                  'Funcionário deletado: $result',
+                  style: const TextStyle(color: Colors.white),
+                ),
+                actions: [
+                  IconButton(
+                    onPressed: () => ScaffoldMessenger.of(context)
+                        .hideCurrentMaterialBanner(),
+                    icon: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                    ),
+                  )
+                ])));
   }
 
   setDateOfBirth(DateTime value) {
@@ -120,7 +145,8 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
   }
 
   Future<void> getEmployee() async {
-    _employee = await _db.getEmployee(widget.id);
+    _employee =
+        await Provider.of<AppDB>(context, listen: false).getEmployee(widget.id);
     _textEditingControllerUserName.text = _employee.userName;
     _textEditingControllerFirstName.text = _employee.firstName;
     _textEditingControllerLastName.text = _employee.lastName;

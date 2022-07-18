@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:teste_drift/data/local/db/app_db.dart';
 import 'package:teste_drift/shared/widgets/birthdate_textformfield.dart';
 import 'package:teste_drift/shared/widgets/custom_textformfield.dart';
@@ -12,7 +13,6 @@ class AddEmployeePage extends StatefulWidget {
 }
 
 class _AddEmployeePageState extends State<AddEmployeePage> {
-  late AppDB _db;
   final _textEditingControllerUserName = TextEditingController();
   final _textEditingControllerFirstName = TextEditingController();
   final _textEditingControllerLastName = TextEditingController();
@@ -27,14 +27,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _db = AppDB();
-  }
-
-  @override
   void dispose() {
-    _db.close();
     _textEditingControllerUserName.dispose();
     _textEditingControllerFirstName.dispose();
     _textEditingControllerLastName.dispose();
@@ -100,16 +93,18 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
         dateOfBirth: drift.Value(_dateOfBirth!),
       );
 
-      await _db.insertEmployee(entity).then((result) =>
-          ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
-              content: Text('Novo funcionário adicionado: $result'),
-              actions: [
-                IconButton(
-                  onPressed: () =>
-                      ScaffoldMessenger.of(context).hideCurrentMaterialBanner(),
-                  icon: const Icon(Icons.close),
-                )
-              ])));
+      await Provider.of<AppDB>(context, listen: false)
+          .insertEmployee(entity)
+          .then((result) => ScaffoldMessenger.of(context).showMaterialBanner(
+                  MaterialBanner(
+                      content: Text('Novo funcionário adicionado: $result'),
+                      actions: [
+                    IconButton(
+                      onPressed: () => ScaffoldMessenger.of(context)
+                          .hideCurrentMaterialBanner(),
+                      icon: const Icon(Icons.close),
+                    )
+                  ])));
     }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:teste_drift/data/local/db/app_db.dart';
 import 'package:teste_drift/shared/widgets/employee_card.dart';
 
@@ -10,20 +11,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late AppDB _appDB;
-
-  @override
-  void initState() {
-    super.initState();
-    _appDB = AppDB();
-  }
-
-  @override
-  void dispose() {
-    _appDB.close();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,15 +18,9 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Drift teste'),
         centerTitle: true,
       ),
-      body: FutureBuilder<List<EmployeeData>>(
-          future: _appDB.getEmployees(),
+      body: StreamBuilder<List<EmployeeData>>(
+          stream: Provider.of<AppDB>(context).watchEmployees,
           builder: (context, snapshot) {
-            if (snapshot.connectionState != ConnectionState.done) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-
             if (snapshot.hasError) {
               return Center(
                 child: Text('Ocorreu um erro: ${snapshot.error}'),
