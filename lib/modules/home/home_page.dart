@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:teste_drift/data/local/db/app_db.dart';
+import 'package:teste_drift/shared/widgets/employee_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -51,19 +52,8 @@ class _HomePageState extends State<HomePage> {
               if (employees.isNotEmpty) {
                 return ListView.builder(
                     itemCount: employees.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(employees[index].id.toString()),
-                              Text(employees[index].userName),
-                              Text(employees[index].firstName),
-                              Text(employees[index].lastName),
-                              Text(employees[index].dateOfBirth.toString()),
-                            ]),
-                      );
-                    });
+                    itemBuilder: (context, index) =>
+                        EmployeeCard(employee: employees[index]));
               } else {
                 return const Center(
                   child: Text('Nenhum funcionário encontrado'),
