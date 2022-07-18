@@ -9,20 +9,25 @@ class EmployeeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(employee.id.toString()),
-          const SizedBox(height: 8),
-          Text(employee.userName),
-          const SizedBox(height: 8),
-          Text(employee.firstName),
-          const SizedBox(height: 8),
-          Text(employee.lastName),
-          const SizedBox(height: 8),
-          Text(Utils.formatDate(employee.dateOfBirth)),
-        ]),
+    return InkWell(
+      onTap: () => Navigator.pushNamed(context, '/adit_employee',
+          arguments: employee.id),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(employee.id.toString()),
+            const SizedBox(height: 8),
+            Text(employee.userName),
+            const SizedBox(height: 8),
+            Text(employee.firstName),
+            const SizedBox(height: 8),
+            Text(employee.lastName),
+            const SizedBox(height: 8),
+            Text(Utils.formatDate(employee.dateOfBirth)),
+          ]),
+        ),
       ),
     );
   }

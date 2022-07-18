@@ -6,12 +6,14 @@ class BirthDateTextFormField extends StatefulWidget {
       {Key? key,
       required this.editingController,
       required this.label,
-      required this.onChangeDate})
+      required this.onChangeDate,
+      this.initialDate})
       : super(key: key);
 
   final TextEditingController editingController;
   final String label;
   final Function(DateTime) onChangeDate;
+  final DateTime? initialDate;
 
   @override
   State<BirthDateTextFormField> createState() => _BirthDateTextFormFieldState();
@@ -24,7 +26,7 @@ class _BirthDateTextFormFieldState extends State<BirthDateTextFormField> {
       controller: widget.editingController,
       keyboardType: TextInputType.name,
       focusNode: AlwaysDisabledFocusNode(),
-      onTap: () => _getDate(context),
+      onTap: () => _getDate(context, widget.initialDate),
       decoration: InputDecoration(
         label: Text(widget.label),
         border: const OutlineInputBorder(),
@@ -38,11 +40,11 @@ class _BirthDateTextFormFieldState extends State<BirthDateTextFormField> {
     );
   }
 
-  Future<void> _getDate(BuildContext context) async {
-    final initialDate = DateTime.now();
+  Future<void> _getDate(BuildContext context, DateTime? initialDate) async {
+    final date = initialDate ?? DateTime.now();
     final newDate = await showDatePicker(
       context: context,
-      initialDate: initialDate,
+      initialDate: date,
       firstDate: DateTime(DateTime.now().year - 100),
       lastDate: DateTime(DateTime.now().year + 1),
     );

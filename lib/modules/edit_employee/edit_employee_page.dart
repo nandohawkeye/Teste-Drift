@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:teste_drift/data/local/db/app_db.dart';
+import 'package:teste_drift/shared/utils/utils.dart';
 import 'package:teste_drift/shared/widgets/birthdate_textformfield.dart';
 import 'package:teste_drift/shared/widgets/custom_textformfield.dart';
 import 'package:drift/drift.dart' as drift;
 
-class AddEmployeePage extends StatefulWidget {
-  const AddEmployeePage({Key? key}) : super(key: key);
+class EditEmployeePage extends StatefulWidget {
+  const EditEmployeePage({Key? key, required this.id}) : super(key: key);
+
+  final int id;
 
   @override
-  State<AddEmployeePage> createState() => _AddEmployeePageState();
+  State<EditEmployeePage> createState() => _EditEmployeePageState();
 }
 
-class _AddEmployeePageState extends State<AddEmployeePage> {
+class _EditEmployeePageState extends State<EditEmployeePage> {
+  late EmployeeData _employee;
   late AppDB _db;
   final _textEditingControllerUserName = TextEditingController();
   final _textEditingControllerFirstName = TextEditingController();
@@ -20,16 +24,11 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   DateTime? _dateOfBirth;
   final GlobalKey<FormState> _formGlobalKey = GlobalKey<FormState>();
 
-  setDateOfBirth(DateTime value) {
-    setState(() {
-      _dateOfBirth = value;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
     _db = AppDB();
+    getEmployee();
   }
 
   @override
@@ -47,11 +46,11 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text('Adicione um funcionário'),
+        title: const Text('Adite o funcionário'),
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () async => addEmployee(),
+            onPressed: () async => aditEmployee(),
             icon: const Icon(Icons.save),
           )
         ],
@@ -91,18 +90,19 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
     );
   }
 
-  void addEmployee() async {
+  void aditEmployee() async {
     if (_formGlobalKey.currentState!.validate()) {
       final entity = EmployeeCompanion(
+        id: drift.Value(widget.id),
         userName: drift.Value(_textEditingControllerUserName.text),
         firstName: drift.Value(_textEditingControllerFirstName.text),
         lastName: drift.Value(_textEditingControllerLastName.text),
         dateOfBirth: drift.Value(_dateOfBirth!),
       );
 
-      await _db.insertEmployee(entity).then((result) =>
+      await _db.updateEmployee(entity).then((result) =>
           ScaffoldMessenger.of(context).showMaterialBanner(MaterialBanner(
-              content: Text('Novo funcionário adicionado: $result'),
+              content: Text('Funcionário editado: $result'),
               actions: [
                 IconButton(
                   onPressed: () =>
@@ -111,5 +111,21 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                 )
               ])));
     }
+  }
+
+  setDateOfBirth(DateTime value) {
+    setState(() {
+      _dateOfBirth = value;
+    });
+  }
+
+  Future<void> getEmployee() async {
+    _employee = await _db.getEmployee(widget.id);
+    _textEditingControllerUserName.text = _employee.userName;
+    _textEditingControllerFirstName.text = _employee.firstName;
+    _textEditingControllerLastName.text = _employee.lastName;
+    _textEditingControllerBirthdate.text =
+        Utils.formatDate(_employee.dateOfBirth);
+    setDateOfBirth(_employee.dateOfBirth);
   }
 }
