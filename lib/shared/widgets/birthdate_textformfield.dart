@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 
 class BirthDateTextFormField extends StatefulWidget {
   const BirthDateTextFormField(
-      {Key? key, required this.editingController, required this.label})
+      {Key? key,
+      required this.editingController,
+      required this.label,
+      required this.onChangeDate})
       : super(key: key);
 
   final TextEditingController editingController;
   final String label;
+  final Function(DateTime) onChangeDate;
 
   @override
   State<BirthDateTextFormField> createState() => _BirthDateTextFormFieldState();
@@ -50,6 +54,8 @@ class _BirthDateTextFormFieldState extends State<BirthDateTextFormField> {
       widget.editingController.text =
           '${newDate.day.toString().padLeft(2, '0')}/${newDate.month.toString().padLeft(2, '0')}/${newDate.year}';
     });
+
+    widget.onChangeDate(newDate);
   }
 }
 

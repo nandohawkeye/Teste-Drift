@@ -1,5 +1,3 @@
-// ignore_for_file: unused_element
-
 import 'dart:io';
 import 'package:drift/native.dart';
 import 'package:path/path.dart' as path;
@@ -23,6 +21,8 @@ class AppDB extends _$AppDB {
 
   @override
   int get schemaVersion => 1;
+
+  Stream<List<EmployeeData>> watchEmployees() => select(employee).watch();
 
   Future<List<EmployeeData>> getEmployees() async =>
       await select(employee).get();
