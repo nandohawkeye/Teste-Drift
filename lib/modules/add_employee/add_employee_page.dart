@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:teste_drift/shared/widgets/birthdate_textformfield.dart';
 import 'package:teste_drift/shared/widgets/custom_textformfield.dart';
 
 class AddEmployeePage extends StatefulWidget {
@@ -17,6 +18,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('Adicione um funcionário'),
         centerTitle: true,
@@ -41,7 +43,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
               editingController: _textEditingControllerLastName,
             ),
             const SizedBox(height: 8),
-            CustomTextFormField(
+            BirthDateTextFormField(
               label: 'Data de nascimento',
               editingController: _textEditingControllerBirthdate,
             ),
